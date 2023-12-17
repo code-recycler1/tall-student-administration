@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::view('/', 'home')->name('home');
+Route::view('/courses', 'courses')->name('courses');
 
 Route::middleware([
     'auth:sanctum',
