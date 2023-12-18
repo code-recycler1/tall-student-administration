@@ -39,7 +39,7 @@
 
     {{-- master section: cards with paginationlinks --}}
     <div class="my-4">{{ $allCourses->links() }}</div>
-    <div class="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6 mt-8">
+    <div class="grid grid-cols-3 gap-6 mt-8">
         @foreach($allCourses as $course)
             <div class="flex flex-col bg-white border border-gray-300 shadow-md rounded-lg overflow-hidden">
                 <div class="border-b-2 border-neutral-100 px-6 py-3 text-center text-sm font-bold">
