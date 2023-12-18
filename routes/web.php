@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\CoursesOverview;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::view('/', 'home')->name('home');
-Route::view('/courses', 'courses')->name('courses');
+Route::get('/courses', CoursesOverview::class)->name('courses');
 
 Route::middleware([
     'auth:sanctum',
