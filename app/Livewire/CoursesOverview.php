@@ -15,7 +15,9 @@ class CoursesOverview extends Component
 
     public $loading = 'Please wait...';
     public $nameOrDescription;
+    public $programme = '%';
     public $perPage = 6;
+    public $perPageOptions = [6, 9, 12, 15, 18, 24];
 
     public $selectedCourse;
     public $showCourseDetailsModal = false;
@@ -27,9 +29,13 @@ class CoursesOverview extends Component
     public function render(): View
     {
         sleep(2);
+
         $allProgrammes = Programme::orderBy('name')->get();
 
-        $allCourses = Course::orderBy('name')->withCount('studentCourses')->paginate($this->perPage);
+        $allCourses = Course::orderBy('name')
+            ->searchNameOrDescription($this->nameOrDescription)
+            ->where('programme_id', 'like', $this->programme)
+            ->withCount('studentCourses')->paginate($this->perPage);
 
         return view('livewire.courses-overview', compact('allCourses', 'allProgrammes'));
     }
@@ -38,5 +44,11 @@ class CoursesOverview extends Component
     {
         $this->selectedCourse = $course->load('studentCourses.student');
         $this->showCourseDetailsModal = true;
+    }
+
+    public function updated($property, $value): void
+    {
+        if (in_array($property, ['perPage', 'nameOrDescription', 'programme']))
+            $this->resetPage();
     }
 }

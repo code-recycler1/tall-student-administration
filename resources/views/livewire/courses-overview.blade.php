@@ -1,6 +1,6 @@
 <div>
-    <div class="fixed top-8 left-1/2 -translate-x-1/2 z-50 animate-pulse"
-         wire:loading>
+    <div wire:loading
+         class="fixed top-8 left-1/2 -translate-x-1/2 z-50 animate-pulse">
         <x-preloader class="bg-lime-700/60 text-white border border-lime-700 shadow-2xl">
             {{ $loading }}
         </x-preloader>
@@ -9,13 +9,15 @@
     <div class="grid grid-cols-3 gap-4">
         <div>
             <x-label for="nameOrDescription" value="Filter"/>
-            <x-input id="nameOrDescription" type="text"
+            <x-input wire:model.live.debounce.500ms="nameOrDescription"
+                     id="nameOrDescription" type="text"
                      class="block mt-1 w-full"
                      placeholder="Filter on course name or description"/>
         </div>
         <div>
             <x-label for="programme" value="Programme"/>
-            <x-form.select id="programme" class="block mt-1 w-full">
+            <x-form.select wire:model.live="programme"
+                           id="programme" class="block mt-1 w-full">
                 <option value="%">All Programmes</option>
                 @foreach($allProgrammes as $p)
                     <option value="{{ $p->id }}">
@@ -26,8 +28,9 @@
         </div>
         <div>
             <x-label for="perPage" value="Courses per page"/>
-            <x-form.select id="perPage" class="block mt-1 w-full">
-                @foreach ([6,9,12,15,18,24] as $value)
+            <x-form.select wire:model.live="perPage"
+                           id="perPage" class="block mt-1 w-full">
+                @foreach ($perPageOptions as $value)
                     <option value="{{ $value }}">{{ $value }}</option>
                 @endforeach
             </x-form.select>
@@ -58,6 +61,19 @@
         @endforeach
     </div>
     <div class="my-4">{{ $allCourses->links() }}</div>
+
+    {{-- No courses found --}}
+    @if($allCourses->isEmpty())
+        <x-alert type="danger" class="w-full">
+            Can't find any course with
+            <b>'{{ $nameOrDescription }}'</b> in
+            @if($programme !== '%')
+                the <b>'{{$allProgrammes->where('id',$programme)->first()->name}}'</b> programme.
+            @else
+                all programmes.
+            @endif
+        </x-alert>
+    @endif
 
     {{-- Modal for selected course details --}}
     <x-modal wire:model="showCourseDetailsModal">

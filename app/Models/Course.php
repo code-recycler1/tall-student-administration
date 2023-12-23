@@ -29,4 +29,11 @@ class Course extends Model
     {
         return $this->hasMany(StudentCourse::class,'course_id');
     }
+
+    // Scopes
+    public function scopeSearchNameOrDescription($query, $search = '%')
+    {
+        return $query->where('name', 'like', "%{$search}%")
+            ->orWhere('description', 'like', "%{$search}%");
+    }
 }
