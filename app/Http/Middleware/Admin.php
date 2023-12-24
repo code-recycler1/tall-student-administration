@@ -15,6 +15,9 @@ class Admin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return $next($request);
+        if (auth()->user()->admin) {
+            return $next($request);
+        }
+        return abort(403, 'Only administrators can access this page');
     }
 }

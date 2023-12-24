@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Admin\Programmes;
 use App\Livewire\CoursesOverview;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 Route::view('/', 'home')->name('home');
 Route::get('/courses', CoursesOverview::class)->name('courses');
 Route::view('/under-construction','under-construction')->name('under-construction');
+
+Route::middleware(['auth', 'admin', 'active'])->get('/programmes', Programmes::class)->name('programmes');
 
 Route::middleware([
     'auth:sanctum',

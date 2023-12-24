@@ -5,7 +5,7 @@
         <x-nav-link href="{{ route('courses') }}" :active="request()->routeIs('courses')">Courses</x-nav-link>
         @auth
             @if(auth()->user()->admin)
-                <x-nav-link href="{{ route('under-construction') }}" :active="request()->routeIs('under-construction')">
+                <x-nav-link href="{{ route('programmes') }}" :active="request()->routeIs('programmes')">
                     Programmes
                 </x-nav-link>
             @endif
