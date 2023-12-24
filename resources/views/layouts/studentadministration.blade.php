@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="{{$description ?? 'Welcome to the Student Administration Application'}}">
     <title>{{ $title ?? 'Student Administration Application'}}</title>
+    <x-layout.favicons/>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>

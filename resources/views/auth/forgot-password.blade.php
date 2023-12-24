@@ -1,8 +1,12 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<x-studentadministration-layout>
+    <x-slot name="description">Forgot password?</x-slot>
+    <x-slot name="title">Forgot password?</x-slot>
+
+    <div class="flex justify-center">
+        <img src="assets/icons/android-chrome-192x192.png" alt="tm_logo"/>
+    </div>
+
+    <x-layout.section class="grid grid-cols-1 max-w-md m-auto">
 
         <div class="mb-4 text-sm text-gray-600">
             {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
@@ -30,5 +34,5 @@
                 </x-button>
             </div>
         </form>
-    </x-authentication-card>
-</x-guest-layout>
+    </x-layout.section>
+</x-studentadministration-layout>

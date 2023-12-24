@@ -1,8 +1,12 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<x-studentadministration-layout>
+    <x-slot name="description">Verify e-mail</x-slot>
+    <x-slot name="title">Verify e-mail</x-slot>
+
+    <div class="flex justify-center">
+        <img src="assets/icons/android-chrome-192x192.png" alt="tm_logo"/>
+    </div>
+
+    <x-layout.section class="grid grid-cols-1 max-w-md m-auto">
 
         <div class="mb-4 text-sm text-gray-600">
             {{ __('Before continuing, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
@@ -41,5 +45,5 @@
                 </form>
             </div>
         </div>
-    </x-authentication-card>
-</x-guest-layout>
+    </x-layout.section>
+</x-studentadministration-layout>

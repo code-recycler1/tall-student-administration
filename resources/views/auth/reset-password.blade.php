@@ -1,8 +1,12 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<x-studentadministration-layout>
+    <x-slot name="description">Reset password</x-slot>
+    <x-slot name="title">Reset password</x-slot>
+
+    <div class="flex justify-center">
+        <img src="assets/icons/android-chrome-192x192.png" alt="tm_logo"/>
+    </div>
+
+    <x-layout.section class="grid grid-cols-1 max-w-md m-auto">
 
         <x-validation-errors class="mb-4" />
 
@@ -32,5 +36,5 @@
                 </x-button>
             </div>
         </form>
-    </x-authentication-card>
-</x-guest-layout>
+    </x-layout.section>
+</x-studentadministration-layout>

@@ -1,17 +1,15 @@
-<x-guest-layout>
-    <x-authentication-card>
-        <x-slot name="logo">
-            <x-authentication-card-logo />
-        </x-slot>
+<x-studentadministration-layout>
+    <x-slot name="description">Login</x-slot>
+    <x-slot name="title">Login</x-slot>
 
-        <x-validation-errors class="mb-4" />
+    <div class="flex justify-center">
+        <img src="assets/icons/android-chrome-192x192.png" alt="tm_logo"/>
+    </div>
 
-        @if (session('status'))
-            <div class="mb-4 font-medium text-sm text-green-600">
-                {{ session('status') }}
-            </div>
-        @endif
-
+    <x-layout.section class="grid grid-cols-1 max-w-md m-auto">
+        {{-- show validation errors --}}
+        <x-validation-errors class="mb-4"/>
+        {{-- login form --}}
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
@@ -44,5 +42,5 @@
                 </x-button>
             </div>
         </form>
-    </x-authentication-card>
-</x-guest-layout>
+    </x-layout.section>
+</x-studentadministration-layout>
