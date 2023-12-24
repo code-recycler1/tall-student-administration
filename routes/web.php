@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
 Route::get('/courses', CoursesOverview::class)->name('courses');
+Route::view('/under-construction','under-construction')->name('under-construction');
 
 Route::middleware([
     'auth:sanctum',

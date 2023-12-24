@@ -50,6 +50,7 @@
                     <p class="text-md font-bold my-4">{{$course->name}}</p>
                     <p class="text-sm my-6">{{$course->description}}</p>
                 </div>
+                @auth
                 <div class="mt-auto border-t-2 border-neutral-100 px-6 py-3 text-center">
                     <x-form.button
                         wire:click="showCourseDetails({{$course->id}})"
@@ -57,6 +58,7 @@
                         Manage students
                     </x-form.button>
                 </div>
+                @endauth
             </div>
         @endforeach
     </div>
