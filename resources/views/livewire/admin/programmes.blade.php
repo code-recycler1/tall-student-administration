@@ -68,14 +68,14 @@
                     Amount of courses
                 </span>
                     <x-heroicon-s-chevron-up
-                            class="w-5 text-slate-400
+                        class="w-5 text-slate-400
                 {{$orderAsc ?: 'rotate-180'}}
                 {{$orderBy === 'courses_count' ? 'inline-block' : 'hidden'}}"/>
                 </th>
                 <th wire:click="resort('name')" class="text-left">
                     <span>Programme</span>
                     <x-heroicon-s-chevron-up
-                            class="w-5 text-slate-400
+                        class="w-5 text-slate-400
                 {{$orderAsc ?: 'rotate-180'}}
                 {{$orderBy === 'name' ? 'inline-block' : 'hidden'}}"/>
                 </th>
@@ -111,10 +111,11 @@
                         @if($editProgramme['id'] !== $programme->id)
                             <div class="flex gap-1 justify-end [&>*]:cursor-pointer [&>*]:outline-0 [&>*]:transition">
                                 <x-phosphor-pencil-line-duotone
-                                        wire:click="edit({{ $programme->id }})"
-                                        class="w-5 text-gray-300 hover:text-green-600"/>
+                                    wire:click="edit({{ $programme->id }})"
+                                    class="w-5 text-gray-300 hover:text-green-600"/>
                                 <x-phosphor-trash-duotone
-                                        class="w-5 text-gray-300 hover:text-red-600"/>
+                                    wire:click="remove({{$programme->id}}, {{$programme->courses_count}})"
+                                    class="w-5 text-gray-300 hover:text-red-600"/>
                             </div>
                         @endif
                     </td>
