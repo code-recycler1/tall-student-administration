@@ -8,10 +8,14 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Str;
 
 class Programmes extends Component
 {
+    use WithPagination;
+
+    public $perPage = 10;
     public $orderBy = 'name';
     public $orderAsc = true;
 
@@ -33,7 +37,7 @@ class Programmes extends Component
     {
         $allProgrammes = Programme::withCount('courses')
             ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
-            ->get();
+            ->paginate($this->perPage);
         return view('livewire.admin.programmes', compact('allProgrammes'));
     }
 
@@ -79,6 +83,12 @@ class Programmes extends Component
     {
         sleep(2);
 
+        $this->editProgramme['name'] = trim($this->editProgramme['name']);
+        if(strtolower($this->editProgramme['name']) === strtolower($programme->name)) {
+            $this->resetValues();
+            return;
+        }
+
         $this->validateOnly('editProgramme.name');
         $oldName = $programme->name;
         $programme->update([
@@ -91,7 +101,7 @@ class Programmes extends Component
         ]);
     }
 
-    public function remove(Programme $programme, $coursesCount): void
+    public function remove(Programme $programme, int $coursesCount): void
     {
         $this->dispatch('swal:confirm', [
             'title' => "Delete $programme->name?",

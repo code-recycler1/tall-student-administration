@@ -47,6 +47,7 @@
     </x-layout.section>
 
     <x-layout.section>
+        <div class="my-4">{{ $allProgrammes->links() }}</div>
         <table class="text-center w-full border border-gray-300">
             <colgroup>
                 <col class="w-20">
@@ -89,22 +90,29 @@
                     <td>{{$programme->id}}</td>
                     <td>{{$programme->courses_count}}</td>
                     @if($editProgramme['id'] !== $programme->id)
-                        <td class="text-left cursor-pointer">
+                        <td wire:click="edit({{ $programme->id }})"
+                            class="text-left cursor-pointer">
                             {{$programme->name}}
                         </td>
                     @else
                         <td>
-                            <x-input id="edit_{{ $programme->id }}" type="text"
-                                     x-init="$el.focus()"
-                                     @keydown.enter="$el.setAttribute('disabled', true);"
-                                     @keydown.tab="$el.setAttribute('disabled', true);"
-                                     @keydown.esc="$el.setAttribute('disabled', true);"
-                                     wire:model="editProgramme.name"
-                                     wire:keydown.enter="update({{ $programme->id }})"
-                                     wire:keydown.tab="update({{ $programme->id }})"
-                                     wire:keydown.escape="resetValues()"
-                                     class="w-48"/>
-                            <x-input-error for="editProgramme.name" class="mt-2"/>
+                            <div class="relative text-left w-full">
+                                <x-input id="edit_{{ $programme->id }}" type="text"
+                                         x-init="$el.focus()"
+                                         @keydown.enter="$el.setAttribute('disabled', true);"
+                                         @keydown.tab="$el.setAttribute('disabled', true);"
+                                         @keydown.esc="$el.setAttribute('disabled', true);"
+                                         wire:model="editProgramme.name"
+                                         wire:keydown.enter="update({{ $programme->id }})"
+                                         wire:keydown.tab="update({{ $programme->id }})"
+                                         wire:keydown.escape="resetValues()"
+                                         class="w-full"/>
+                                <x-phosphor-arrows-clockwise
+                                    wire:loading
+                                    wire:target="update"
+                                    class="w-5 h-5 text-gray-500 absolute top-3 right-2 animate-spin"/>
+                                <x-input-error for="editProgramme.name" class="mt-2"/>
+                            </div>
                         </td>
                     @endif
                     <td>
@@ -123,5 +131,6 @@
             @endforeach
             </tbody>
         </table>
+        <div class="my-4">{{ $allProgrammes->links() }}</div>
     </x-layout.section>
 </div>
