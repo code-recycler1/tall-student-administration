@@ -19,6 +19,13 @@ class Programmes extends Component
     )]
     public $newProgramme;
 
+    #[Validate([
+        'editProgramme.name' => 'required|min:3|max:30|unique:programmes,name',
+    ], as: [
+        'editProgramme.name' => 'name for this programme',
+    ])]
+    public $editProgramme = ['id' => null, 'name' => null];
+
     #[Layout('layouts.studentadministration', ['title' => 'Programmes', 'description' => 'Manage the programmes',])]
     public function render(): View
     {
@@ -38,7 +45,7 @@ class Programmes extends Component
 
     public function resetValues(): void
     {
-        $this->reset('newProgramme');
+        $this->reset('newProgramme', 'editProgramme');
         $this->resetErrorBag();
     }
 
@@ -55,6 +62,30 @@ class Programmes extends Component
         $this->dispatch('swal:toast', [
             'background' => 'success',
             'html' => "The programme <b><i>{$programme->name}</i></b> has been added.",
+        ]);
+    }
+
+    public function edit(Programme $programme): void
+    {
+        $this->editProgramme = [
+            'id' => $programme->id,
+            'name' => $programme->name,
+        ];
+    }
+
+    public function update(Programme $programme): void
+    {
+        sleep(2);
+
+        $this->validateOnly('editProgramme.name');
+        $oldName = $programme->name;
+        $programme->update([
+            'name' => trim($this->editProgramme['name']),
+        ]);
+        $this->resetValues();
+        $this->dispatch('swal:toast', [
+            'background' => 'success',
+            'html' => "The programme <b><i>{$oldName}</i></b> has been updated to <b><i>{$programme->name}</i></b>.",
         ]);
     }
 }
