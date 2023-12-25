@@ -1,12 +1,12 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\form;
 
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
 
-class Section extends Component
+class Textarea extends Component
 {
     /**
      * Create a new component instance.
@@ -21,6 +21,6 @@ class Section extends Component
      */
     public function render(): View|Closure|string
     {
-        return view('components.section');
+        return view('components.form.textarea');
     }
 }

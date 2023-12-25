@@ -51,13 +51,14 @@
                     <p class="text-sm my-6">{{$course->description}}</p>
                 </div>
                 @auth
-                <div class="mt-auto border-t-2 border-neutral-100 px-6 py-3 text-center">
-                    <x-form.button
-                        wire:click="showCourseDetails({{$course->id}})"
-                        disabled="{{$course->student_courses_count === 0}}" type="button" color="primary" text="sm">
-                        Manage students
-                    </x-form.button>
-                </div>
+                    <div class="mt-auto border-t-2 border-neutral-100 px-6 py-3 text-center">
+                        <x-form.button
+                            wire:click="showCourseDetails({{$course->id}})"
+                            disabled="{{$course->student_courses_count === 0}}" type="button" color="primary" text="sm"
+                            class="block w-full">
+                            Manage students
+                        </x-form.button>
+                    </div>
                 @endauth
             </div>
         @endforeach
@@ -67,12 +68,13 @@
     {{-- No courses found --}}
     @if($allCourses->isEmpty())
         <x-alert type="danger" class="w-full">
-            Can't find any course with
-            <b>'{{ $nameOrDescription }}'</b> in
-            @if($programme !== '%')
-                the <b>'{{$allProgrammes->where('id',$programme)->first()->name}}'</b> programme.
-            @else
-                all programmes.
+            @if(!empty(trim($nameOrDescription)) && $programme !== '%')
+                Can't find any course with <b>'{{ $nameOrDescription }}'</b> in the
+                <b>'{{ $allProgrammes->find($programme)->name }}'</b> programme.
+            @elseif(empty(trim($nameOrDescription)) && $programme !== '%')
+                Can't find any course in the <b>'{{ $allProgrammes->find($programme)->name }}'</b> programme.
+            @elseif(!empty(trim($nameOrDescription)) && $programme === '%')
+                Can't find any courses.
             @endif
         </x-alert>
     @endif

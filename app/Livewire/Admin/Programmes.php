@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Forms\CourseForm;
 use App\Models\Programme;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Layout;
@@ -18,6 +19,10 @@ class Programmes extends Component
     public $perPage = 10;
     public $orderBy = 'name';
     public $orderAsc = true;
+    public $showModal = false;
+
+    public CourseForm $form;
+    public $selectedProgramme;
 
     #[Validate(
         'required|min:3|max:30|unique:programmes,name',
@@ -38,6 +43,7 @@ class Programmes extends Component
         $allProgrammes = Programme::withCount('courses')
             ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
+
         return view('livewire.admin.programmes', compact('allProgrammes'));
     }
 
@@ -51,7 +57,7 @@ class Programmes extends Component
 
     public function resetValues(): void
     {
-        $this->reset('newProgramme', 'editProgramme');
+        $this->reset(['newProgramme', 'editProgramme']);
         $this->resetErrorBag();
     }
 
@@ -59,24 +65,15 @@ class Programmes extends Component
     {
         $this->validateOnly('newProgramme');
 
-        $programme = Programme::create([
-            'name' => trim($this->newProgramme),
-        ]);
-
+        $programme = Programme::create(['name' => trim($this->newProgramme)]);
         $this->resetValues();
 
-        $this->dispatch('swal:toast', [
-            'background' => 'success',
-            'html' => "The programme <b><i>{$programme->name}</i></b> has been added.",
-        ]);
+        $this->showToast("The programme <b><i>{$programme->name}</i></b> has been added.");
     }
 
     public function edit(Programme $programme): void
     {
-        $this->editProgramme = [
-            'id' => $programme->id,
-            'name' => $programme->name,
-        ];
+        $this->editProgramme = ['id' => $programme->id, 'name' => $programme->name];
     }
 
     public function update(Programme $programme): void
@@ -84,20 +81,40 @@ class Programmes extends Component
         sleep(2);
 
         $this->editProgramme['name'] = trim($this->editProgramme['name']);
-        if(strtolower($this->editProgramme['name']) === strtolower($programme->name)) {
+        if (strtolower($this->editProgramme['name']) === strtolower($programme->name)) {
             $this->resetValues();
             return;
         }
 
         $this->validateOnly('editProgramme.name');
         $oldName = $programme->name;
-        $programme->update([
-            'name' => trim($this->editProgramme['name']),
-        ]);
+        $programme->update(['name' => trim($this->editProgramme['name'])]);
         $this->resetValues();
+
+        $this->showToast("The programme <b><i>{$oldName}</i></b> has been updated to <b><i>{$programme->name}</i></b>.");
+    }
+
+    public function newCourse(Programme $programme): void
+    {
+        $this->form->reset();
+        $this->selectedProgramme = $programme->load('courses');
+        $this->resetErrorBag();
+        $this->showModal = true;
+    }
+
+    public function createCourse(): void
+    {
+        $this->form->programme_id = $this->selectedProgramme->id;
+        $this->form->create();
+        $this->showToast("The course <b><i>{$this->form->name}</i></b> has been added to the <b><i>{$this->selectedProgramme->name}</i></b> programme.");
+        $this->form->reset();
+    }
+
+    private function showToast(string $message): void
+    {
         $this->dispatch('swal:toast', [
             'background' => 'success',
-            'html' => "The programme <b><i>{$oldName}</i></b> has been updated to <b><i>{$programme->name}</i></b>.",
+            'html' => $message,
         ]);
     }
 
@@ -108,7 +125,10 @@ class Programmes extends Component
             'icon' => $coursesCount > 0 ? 'warning' : '',
             'background' => $coursesCount > 0 ? 'error' : '',
             'html' => $coursesCount > 0 ?
-                '<b>ATTENTION</b>: you are going to delete <b>' . $coursesCount . Str::plural(' course', $coursesCount) . '</b> at the same time!' : '', 'color' => $coursesCount > 0 ? 'red' : '',
+                '<b>ATTENTION</b>: you are going to delete <b>' .
+                $coursesCount . Str::plural(' course', $coursesCount) .
+                '</b> at the same time!' : '',
+            'color' => $coursesCount > 0 ? 'red' : '',
             'cancelButtonText' => 'NO!',
             'confirmButtonText' => 'YES DELETE THIS PROGRAMME',
             'next' => [
@@ -125,9 +145,7 @@ class Programmes extends Component
     {
         $programme = Programme::findOrFail($id);
         $programme->delete();
-        $this->dispatch('swal:toast', [
-            'background' => 'success',
-            'html' => "The programme <b><i>{$programme->name}</i></b> has been deleted.",
-        ]);
+
+        $this->showToast("The programme <b><i>{$programme->name}</i></b> has been deleted.");
     }
 }

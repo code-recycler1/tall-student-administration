@@ -5,9 +5,9 @@
         <div class="p-4 flex justify-between items-start gap-4">
             <div class="relative w-64">
                 <x-input id="newProgramme" type="text" placeholder="New programme"
-                         @keydown.enter="$el.setAttribute('disabled', true); $el.value = '';"
-                         @keydown.tab="$el.setAttribute('disabled', true); $el.value = '';"
-                         @keydown.esc="$el.setAttribute('disabled', true); $el.value = '';"
+                         @keydown.enter="handleInputKeydown"
+                         @keydown.tab="handleInputKeydown"
+                         @keydown.esc="handleInputKeydown"
                          wire:model="newProgramme"
                          wire:keydown.enter="create()"
                          wire:keydown.tab="create()"
@@ -60,7 +60,7 @@
                 <th wire:click="resort('id')">
                     <span>#</span>
                     <x-heroicon-s-chevron-up
-                        class="w-5 text-slate-400
+                            class="w-5 text-slate-400
                 {{$orderAsc ?: 'rotate-180'}}
                 {{$orderBy === 'id' ? 'inline-block' : 'hidden'}}"/>
                 </th>
@@ -69,14 +69,14 @@
                     Amount of courses
                 </span>
                     <x-heroicon-s-chevron-up
-                        class="w-5 text-slate-400
+                            class="w-5 text-slate-400
                 {{$orderAsc ?: 'rotate-180'}}
                 {{$orderBy === 'courses_count' ? 'inline-block' : 'hidden'}}"/>
                 </th>
                 <th wire:click="resort('name')" class="text-left">
                     <span>Programme</span>
                     <x-heroicon-s-chevron-up
-                        class="w-5 text-slate-400
+                            class="w-5 text-slate-400
                 {{$orderAsc ?: 'rotate-180'}}
                 {{$orderBy === 'name' ? 'inline-block' : 'hidden'}}"/>
                 </th>
@@ -108,9 +108,9 @@
                                          wire:keydown.escape="resetValues()"
                                          class="w-full"/>
                                 <x-phosphor-arrows-clockwise
-                                    wire:loading
-                                    wire:target="update"
-                                    class="w-5 h-5 text-gray-500 absolute top-3 right-2 animate-spin"/>
+                                        wire:loading
+                                        wire:target="update"
+                                        class="w-5 h-5 text-gray-500 absolute top-3 right-2 animate-spin"/>
                                 <x-input-error for="editProgramme.name" class="mt-2"/>
                             </div>
                         </td>
@@ -119,11 +119,14 @@
                         @if($editProgramme['id'] !== $programme->id)
                             <div class="flex gap-1 justify-end [&>*]:cursor-pointer [&>*]:outline-0 [&>*]:transition">
                                 <x-phosphor-pencil-line-duotone
-                                    wire:click="edit({{ $programme->id }})"
-                                    class="w-5 text-gray-300 hover:text-green-600"/>
+                                        wire:click="edit({{ $programme->id }})"
+                                        class="w-5 text-gray-300 hover:text-green-600"/>
+                                <x-phosphor-book-duotone
+                                        wire:click="newCourse({{ $programme->id }})"
+                                        class="w-5 text-gray-300 hover:text-blue-600"/>
                                 <x-phosphor-trash-duotone
-                                    wire:click="remove({{$programme->id}}, {{$programme->courses_count}})"
-                                    class="w-5 text-gray-300 hover:text-red-600"/>
+                                        wire:click="remove({{$programme->id}}, {{$programme->courses_count}})"
+                                        class="w-5 text-gray-300 hover:text-red-600"/>
                             </div>
                         @endif
                     </td>
@@ -133,4 +136,66 @@
         </table>
         <div class="my-4">{{ $allProgrammes->links() }}</div>
     </x-layout.section>
+
+    {{-- Modal for edit a programme --}}
+    <x-modal id="programmeModal"
+             wire:model.live="showModal">
+        <div class="px-6 py-4 border-b text-2xl">
+            <h1>{{$selectedProgramme->name ?? ''}}</h1>
+        </div>
+        <form wire:submit.prevent="createCourse()">
+            <div class="px-6 py-4 text-sm text-gray-600">
+                @if ($errors->any())
+                    <x-alert type="danger">
+                        <x-list>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </x-list>
+                    </x-alert>
+                @endif
+                <div class="border-b p-4">
+                    <h2 class="text-xl">Courses</h2>
+                    <div class="py-4">
+                        @if ($selectedProgramme && $selectedProgramme->courses->isNotEmpty())
+                            @foreach($selectedProgramme->courses as $course)
+                                <p data-tippy-content="{{$course->description ?? ''}}" class="text-base">
+                                    {{$course->name ?? ''}}
+                                </p>
+                            @endforeach
+                        @else
+                            <x-alert type="danger" class="w-full">
+                                There are no courses in this programme...
+                            </x-alert>
+                        @endif
+                    </div>
+                </div>
+                <div class="pt-2">
+                    <h2 class="text-xl">Add a course to the {{$selectedProgramme->name ?? ''}} programme</h2>
+                    <x-label for="name" value="Name" class="mt-4"/>
+                    <x-input wire:model="form.name"
+                             id="name" type="text"
+                             class="mt-1 block w-full"/>
+                    <x-label for="description" value="Description" class="mt-4"/>
+                    <x-form.textarea wire:model="form.description"
+                                     id="description" class="block mt-1 w-full" rows="2"/>
+                </div>
+            </div>
+            <div class="flex flex-row justify-end px-6 py-4 bg-gray-100 text-end">
+                <x-secondary-button @click="$wire.showModal = false">Cancel</x-secondary-button>
+                <x-form.button color="dark"
+                               text="xs"
+                               class="inline-flex uppercase ml-2">Add new course
+                </x-form.button>
+            </div>
+        </form>
+    </x-modal>
 </div>
+
+<script>
+    function handleInputKeydown(event) {
+        const element = event.target;
+        element.setAttribute('disabled', true);
+        element.value = '';
+    }
+</script>
