@@ -24,7 +24,7 @@
                'type' => 'submit',
                'class' => "
                    $style
-                   items-center px-4 py-4 border border-transparent rounded-md text-$text text-white
+                   items-center px-4 border border-transparent rounded-md text-$text text-white
                    tracking-widest focus:outline-none focus:ring-2 focus:ring-offset-2 transition ease-in-out
                    duration-150"
         ])}}

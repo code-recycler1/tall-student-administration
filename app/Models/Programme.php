@@ -10,6 +10,11 @@ class Programme extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are not mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $guarded = [
         'id',
         'created_at',
@@ -17,7 +22,12 @@ class Programme extends Model
     ];
 
     //Relationships
-    // Programme <-> Course
+
+    /**
+     * Define the one-to-many relationship between Programme and Course.
+     *
+     * @return HasMany
+     */
     public function courses(): HasMany
     {
         return $this->hasMany(Course::class);

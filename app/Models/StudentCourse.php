@@ -10,6 +10,11 @@ class StudentCourse extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are not mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $guarded = [
         'id',
         'created_at',
@@ -17,13 +22,22 @@ class StudentCourse extends Model
     ];
 
     // Relationships
-    // StudentCourse <-> Student
+
+    /**
+     * Define the relationship between StudentCourse and Student.
+     *
+     * @return BelongsTo
+     */
     public function student(): BelongsTo
     {
         return $this->belongsTo(Student::class);
     }
 
-    // StudentCourse <-> Course
+    /**
+     * Define the relationship between StudentCourse and Course.
+     *
+     * @return BelongsTo
+     */
     public function course(): BelongsTo
     {
         return $this->belongsTo(Course::class);

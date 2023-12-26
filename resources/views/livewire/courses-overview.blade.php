@@ -55,7 +55,7 @@
                         <x-form.button
                             wire:click="showCourseDetails({{$course->id}})"
                             disabled="{{$course->student_courses_count === 0}}" type="button" color="primary" text="sm"
-                            class="block w-full">
+                            class="block w-full py-4">
                             Manage students
                         </x-form.button>
                     </div>

@@ -1,4 +1,11 @@
 <div>
+    <div wire:loading
+         class="fixed top-8 left-1/2 -translate-x-1/2 z-50 animate-pulse">
+        <x-preloader class="bg-lime-700/60 text-white border border-lime-700 shadow-2xl">
+            {{ $loading }}
+        </x-preloader>
+    </div>
+
     <x-layout.section
         x-data="{ open: false }"
         class="p-0 mb-4 flex flex-col gap-2">
@@ -159,7 +166,7 @@
                     <div class="py-4">
                         @if ($selectedProgramme && $selectedProgramme->courses->isNotEmpty())
                             @foreach($selectedProgramme->courses as $course)
-                                <p data-tippy-content="{{$course->description ?? ''}}" class="text-base">
+                                <p data-tippy-content="{{$course->description ?? ''}}" class="text-base w-max pb-0.5">
                                     {{$course->name ?? ''}}
                                 </p>
                             @endforeach
@@ -181,11 +188,11 @@
                                      id="description" class="block mt-1 w-full" rows="2"/>
                 </div>
             </div>
-            <div class="flex flex-row justify-end px-6 py-4 bg-gray-100 text-end">
+            <div class="flex flex-row justify-end px-6 py-4 bg-gray-100">
                 <x-secondary-button @click="$wire.showModal = false">Cancel</x-secondary-button>
                 <x-form.button color="dark"
                                text="xs"
-                               class="inline-flex uppercase ml-2">Add new course
+                               class="inline-flex uppercase ml-2 py-2">Add new course
                 </x-form.button>
             </div>
         </form>

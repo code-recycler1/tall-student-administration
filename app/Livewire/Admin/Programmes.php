@@ -16,6 +16,9 @@ class Programmes extends Component
 {
     use WithPagination;
 
+    //region Properties
+
+    public $loading = 'Please wait...';
     public $perPage = 10;
     public $orderBy = 'name';
     public $orderAsc = true;
@@ -37,9 +40,14 @@ class Programmes extends Component
     ])]
     public $editProgramme = ['id' => null, 'name' => null];
 
+    //endregion
+
+    //region Methods
+
     #[Layout('layouts.studentadministration', ['title' => 'Programmes', 'description' => 'Manage the programmes',])]
     public function render(): View
     {
+        // Retrieve all programmes with the count of associated courses.
         $allProgrammes = Programme::withCount('courses')
             ->orderBy($this->orderBy, $this->orderAsc ? 'asc' : 'desc')
             ->paginate($this->perPage);
@@ -47,79 +55,177 @@ class Programmes extends Component
         return view('livewire.admin.programmes', compact('allProgrammes'));
     }
 
-    public function resort($column): void
+    /**
+     * Resort programmes based on the selected column.
+     *
+     * @param string $column
+     *
+     * @return void
+     */
+    public function resort(string $column): void
     {
+        // Toggle the sorting order if the selected column is the same as the current sorting column.
+        // Otherwise, set the sorting order to 'ascending' and update the sorting column.
         $this->orderBy === $column ?
             $this->orderAsc = !$this->orderAsc :
             $this->orderAsc = true;
         $this->orderBy = $column;
     }
 
+    /**
+     * Reset form values and error messages.
+     *
+     * @return void
+     */
     public function resetValues(): void
     {
+        // Reset the values of newProgramme and editProgramme.
         $this->reset(['newProgramme', 'editProgramme']);
+
+        // Reset any previous error messages.
         $this->resetErrorBag();
     }
 
+    /**
+     * Create a new programme using the provided data.
+     *
+     * @return void
+     */
     public function create(): void
     {
+        // Validate the new programme name using Livewire validation rules.
         $this->validateOnly('newProgramme');
 
+        // Create a new programme with the trimmed name.
         $programme = Programme::create(['name' => trim($this->newProgramme)]);
+
+        // Reset form values after successfully creating the programme.
         $this->resetValues();
 
-        $this->showToast("The programme <b><i>{$programme->name}</i></b> has been added.");
+        // Show a success toast message with the name of the added programme.
+        $this->showToast('success', "The programme <b><i>$programme->name</i></b> has been added.");
     }
 
+    /**
+     * Prepare the data for editing a programme.
+     *
+     * @param  Programme  $programme
+     *
+     * @return void
+     */
     public function edit(Programme $programme): void
     {
-        $this->editProgramme = ['id' => $programme->id, 'name' => $programme->name];
+        // Set the editProgramme property with the specified fields from the given programme.
+        $this->editProgramme = $programme->only('id', 'name');
     }
 
+    /**
+     * Update a programme's information.
+     *
+     * @param Programme $programme
+     *
+     * @return void
+     */
     public function update(Programme $programme): void
     {
+        // Simulate a delay for a better user experience.
         sleep(2);
 
-        $this->editProgramme['name'] = trim($this->editProgramme['name']);
-        if (strtolower($this->editProgramme['name']) === strtolower($programme->name)) {
+        // Trim the edited programme name to remove extra whitespace.
+        $trimmedName = trim($this->editProgramme['name']);
+
+        // If the trimmed name is the same as the current programme's name, reset the form values.
+        if (strtolower($trimmedName) === strtolower($programme->name)) {
             $this->resetValues();
             return;
         }
 
+        // Validate the trimmed name using Livewire validation rules.
         $this->validateOnly('editProgramme.name');
+
+        // Store the old programme name for displaying success message.
         $oldName = $programme->name;
-        $programme->update(['name' => trim($this->editProgramme['name'])]);
+
+        // Update the programme's name with the trimmed value.
+        $programme->update(['name' => $trimmedName]);
+
+        // Reset form values.
         $this->resetValues();
 
-        $this->showToast("The programme <b><i>{$oldName}</i></b> has been updated to <b><i>{$programme->name}</i></b>.");
+        // Show a success toast message with the old and new programme names.
+        $this->showToast('success', "The programme <b><i>{$oldName}</i></b> has been updated to <b><i>{$programme->name}</i></b>.");
     }
 
+    /**
+     * Initialize the form for adding a new course to a programme.
+     *
+     * @param Programme $programme
+     *
+     * @return void
+     */
     public function newCourse(Programme $programme): void
     {
+        // Reset the form fields.
         $this->form->reset();
+
+        // Load the selected programme with its associated courses.
         $this->selectedProgramme = $programme->load('courses');
+
+        // Reset any previous error messages.
         $this->resetErrorBag();
+
+        // Display the modal for adding a new course.
         $this->showModal = true;
     }
 
+    /**
+     * Create a new course and associate it with the selected programme.
+     *
+     * @return void
+     */
     public function createCourse(): void
     {
+        // Set the programme ID for the new course.
         $this->form->programme_id = $this->selectedProgramme->id;
+
+        // Create the new course using the form data.
         $this->form->create();
-        $this->showToast("The course <b><i>{$this->form->name}</i></b> has been added to the <b><i>{$this->selectedProgramme->name}</i></b> programme.");
+
+        // Show a success toast message with the name of the added course and its associated programme.
+        $this->showToast('success', "The course <b><i>{$this->form->name}</i></b> has been added to the <b><i>{$this->selectedProgramme->name}</i></b> programme.");
+
+        // Reset the form fields after successfully creating the course.
         $this->form->reset();
     }
 
-    private function showToast(string $message): void
+    /**
+     * Show a Swal toast with specified background and message.
+     *
+     * @param string $background
+     * @param string $message
+     *
+     * @return void
+     */
+    private function showToast(string $background, string $message): void
     {
+        // Dispatch a Livewire event to show a Swal toast with the provided background and message.
         $this->dispatch('swal:toast', [
-            'background' => 'success',
+            'background' => $background,
             'html' => $message,
         ]);
     }
 
+    /**
+     * Initiate the removal of a programme, prompting for confirmation.
+     *
+     * @param Programme $programme
+     * @param int $coursesCount
+     *
+     * @return void
+     */
     public function remove(Programme $programme, int $coursesCount): void
     {
+        // Dispatch a Livewire event to show a Swal confirmation with parameters.
         $this->dispatch('swal:confirm', [
             'title' => "Delete $programme->name?",
             'icon' => $coursesCount > 0 ? 'warning' : '',
@@ -140,12 +246,25 @@ class Programmes extends Component
         ]);
     }
 
+    /**
+     * Delete a programme and show a success toast.
+     *
+     * @param int $id
+     *
+     * @return void
+     */
     #[On('delete')]
     public function delete(int $id): void
     {
+        // Retrieve the Programme with the specified ID or throw an exception if not found.
         $programme = Programme::findOrFail($id);
+
+        // Delete the retrieved Programme.
         $programme->delete();
 
-        $this->showToast("The programme <b><i>{$programme->name}</i></b> has been deleted.");
+        // Show a success toast indicating that the programme has been deleted.
+        $this->showToast('success', "The programme <b><i>{$programme->name}</i></b> has been deleted.");
     }
+
+    //endregion
 }

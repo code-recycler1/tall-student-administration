@@ -11,19 +11,33 @@ class Student extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'first_name',
         'last_name',
     ];
 
     //Relationships
-    //Student <-> Programme
+
+    /**
+     * Define the relationship between Student and Programme.
+     *
+     * @return BelongsTo
+     */
     public function programme(): BelongsTo
     {
         return $this->belongsTo(Programme::class)->withDefault();
     }
 
-    //Student <-> StudentCourse
+    /**
+     * Define the relationship between Student and StudentCourse.
+     *
+     * @return HasMany
+     */
     public function studentCourses(): HasMany
     {
         return $this->hasMany(StudentCourse::class, 'student_id');
